@@ -1,0 +1,7 @@
+# REA: correct capability boundary
+
+REA is an upstream technical-analysis and investigation system. It can expose a capability catalog, route supported artifact investigations through available provider adapters, and produce structured analysis results, evidence, limitations, or unknowns. Depending on the target and installed providers, its supported domains may include native binaries, managed assemblies, Android packages, firmware, web/application assets, and selected runtime observations. The live capability catalog and provider readiness—not this workbench—determine what is available in a particular environment.
+
+REA is not a market-data provider, portfolio oracle, investment strategist, or exchange execution system. Clean-room reconstruction is a derived artifact: it must be tested against authorized references; generated code is not automatically equivalent to the original. Preserve REA's evidence identity, provenance, uncertainty, provider constraints, and limitations; do not convert an inference into an observation or claim that all listed decompilers are installed or automatically usable.
+
+This standalone workbench does not currently invoke REA or its MCP server. The integration seam is future-facing and must use REA's documented, versioned CLI/MCP contracts, with explicit target authorization and provider availability checks. It does not import private APIs or copy upstream implementation code.
