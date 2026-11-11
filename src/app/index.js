@@ -1,7 +1,4 @@
-import { createWorkbenchSummary, workbenchMeta } from './workbench-meta.js';
+import { server } from './server.js';
 
-console.log('SUN Financial Workbench initialized.');
-console.log(JSON.stringify({
-  meta: workbenchMeta,
-  summary: createWorkbenchSummary()
-}, null, 2));
+const port = Number(process.env.PORT ?? 4173);
+server.listen(port, '127.0.0.1', () => console.log(`SUN workbench listening at http://127.0.0.1:${port}`));

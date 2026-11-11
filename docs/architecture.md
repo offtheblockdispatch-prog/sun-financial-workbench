@@ -1,70 +1,48 @@
-# Architecture
+# Alpha workbench architecture and reuse decisions
 
-The SUN Financial Workbench is composed of modular layers with clean responsibility boundaries.
+The workbench is a standalone Node.js application until SUN, NERVE, and BRIDGE integration contracts are provided. No SUN internal APIs are assumed.
 
-## Layer 1: Domain adapters
+## Runtime components
 
-These modules connect to external systems and capabilities, including:
-- REA / reverse engineering tools
-- market data providers
-- file system and artifact ingestion
-- identity and authentication boundaries
-- execution or simulation providers
+- `public/`: responsive single-page workbench; SVG graph is interactive and built from API graph data.
+- `src/finance/market-data.js`: quote provider adapter. Attempts CoinGecko's public simple-price API for crypto; clear fallback sample quotes and freshness labels remain if the provider is unavailable. Equity quotes are explicitly illustrative.
+- `src/finance/graph.js`: financial relationship graph combines quote nodes with labeled thematic hypotheses; those relationships are not presented as proven causality.
+- `src/agents/opportunity-agent.js`: deterministic research screen creates explainable, low-confidence momentum hypotheses. It is not an autonomous trading signal.
+- `src/paper-trading/broker.js`: persistent JSON paper ledger, fee accounting, cash accounting, long-only positions, and per-order cap. Live execution is not implemented.
+- `src/app/server.js`: local HTTP API and static UI; listens on loopback only.
 
-## Layer 2: Intelligence and evidence
+## Run and test
 
-This captures the actual artifacts and observations:
-- binary metadata
-- memory and symbol observations
-- financial signal data
-- strategy reasoning records
-- evidence bundles and provenance scores
+Requires Node.js 20+.
 
-## Layer 3: Agent intelligence
+```sh
+npm test
+npm start
+# open http://127.0.0.1:4173
+```
 
-Agents operate under explicit task patterns:
-- researcher
-- analyst
-- strategist
-- risk reviewer
-- executor
-- memory curator
+Market provider access is optional. If no network is available, the UI shows clearly labeled sample prices. Set `PORT` to change the local port. Set `SUN_PAPER_STATE` to choose a local ledger path. Keep that file private; it is ignored by git.
 
-## Layer 4: Workbench orchestration
+## API seams
 
-The orchestration layer manages:
-- task routing
-- context assembly
-- memory retrieval
-- approval and safety gates
-- simulation or execution dispatch
+- `GET /api/state`: graph, market snapshot, portfolio, opportunities, mode.
+- `POST /api/refresh`: refresh public quote observations.
+- `POST /api/paper/order`: simulated order only; requires symbol, side, quantity, reference price.
+- `POST /api/agents/opportunity-scan`: run explainable rule-based discovery; does not place orders.
 
-## Layer 5: Paper trading and risk sandbox
+These are prototype contracts, not assumed SUN/NERVE/BRIDGE APIs. Future adapters should translate explicit versioned requests/events at the boundary, with authentication, authorization, retries, audit records, and cancellation designed with the owners of those systems.
 
-The paper-trading layer is intentionally separate from live execution. It is responsible for:
-- simulation of orders
-- portfolio state
-- performance tracking
-- strategy validation
-- risk review and scenario analysis
+## Reuse research and license notes
 
-## Layer 6: Human control plane
+The design draws on public patterns reviewed from [Hummingbot](https://github.com/hummingbot/hummingbot) (connector boundaries and paper connectors; Apache-2.0), [Freqtrade](https://github.com/freqtrade/freqtrade) (dry-run behavior and strategy separation; GPL-3.0), [CCXT](https://github.com/ccxt/ccxt) (normalized exchange API; MIT), [LangGraph](https://github.com/langchain-ai/langgraph) (stateful workflow/checkpoint concepts; MIT), and [yfinance](https://github.com/ranaroussi/yfinance) (non-official Yahoo data adapter; Apache-2.0 and Yahoo usage restrictions). No upstream source has been copied into this repository.
 
-All high-risk or irreversible actions pass through human review. The platform should create a visible review trail for:
-- approval requests
-- evidence summaries
-- execution states
-- fallback decisions
+The user's public `Reverse-Engineer-Anything` fork from `morluto/rea` is intended as an important upstream capability in the broader workbench. Its exact repository URL was not confirmed through repository lookup, so this alpha documents the integration boundary without inventing a URL or importing unknown code. REA remains separate and attributable; this repository composes it rather than copying or silently modifying it.
 
-## Architectural emphasis
+## Safety and data limitations
 
-The design favors:
-- explicit contracts
-- observable state
-- separable tool boundaries
-- human-in-the-loop review
-- provenance over guesswork
-
-## Future evolution
-
-This architecture is intended to evolve toward a real mission-control platform that can support technical investigations, market intelligence, simulation, and controlled autonomous execution without collapsing boundaries between analysis and action.
+- Paper-only: no exchange credentials, wallet signing, live order routes, or fund movement.
+- No shorting, no leverage, $5,000 maximum order notional, fee assumption 0.10%.
+- Public crypto quote API is best-effort and rate-limited; never call this feed guaranteed real-time.
+- Stocks in the demo are static illustrative values and are never labeled as live.
+- The opportunity screen is an educational heuristic, not financial advice or a performance claim.
+- Local JSON persistence is suitable for a single-user prototype only, not a multi-user or concurrent production service.

@@ -1,9 +1,2 @@
-# .gitignore
-
-node_modules/
-dist/
-.env
-.DS_Store
-coverage/
-.nyc_output/
-*.log
+# Runtime state is local and should not be committed.
+data/
