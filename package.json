@@ -1,0 +1,32 @@
+{
+  "name": "sun-financial-workbench",
+  "version": "0.1.0",
+  "private": false,
+  "description": "AI-native workbench for REA, financial intelligence, strategy simulation, and evidence-backed operations.",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/app/index.js",
+    "start": "node src/app/index.js",
+    "test": "node --test",
+    "lint": "node --check src/**/*.js",
+    "build": "node scripts/build.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/offtheblockdispatch-prog/sun-financial-workbench.git"
+  },
+  "keywords": [
+    "ai",
+    "agents",
+    "architecture",
+    "financial-intelligence",
+    "paper-trading",
+    "research",
+    "reverse-engineering",
+    "tooling"
+  ]
+}
